@@ -1,10 +1,15 @@
+import json
 import time
 
-import Adafruit_DHT
-import  GPIO
+import  RPi.GPIO as GPIO
 
-from RPi.GPIO
+GPIO.setmode(GPIO.BCM)
 
+SONIC_TIME_TRIGGER = 18
+SONIC_TIME_ECHO = 24
+
+GPIO.setup(SONIC_TIME_TRIGGER, GPIO.OUT)
+GPIO.setup(SONIC_TIME_ECHO, GPIO.IN)
 
 def get_sonic_time():
     """HCSR04 sends a sonic signal and is notified when the signal returns
@@ -12,26 +17,19 @@ def get_sonic_time():
 
     :return: time between sending and receiving the sonic signal
     """
-    GPIPO.setmode(GPIO.BCM)
 
-    SONIC_TIME_TRIGGER = "PORT"
-    SONIC_TIME_ECHO = "PORT"
-
-    GPIO.setup(SONIC_TIME_TRIGGER, GPIO.OUT)
-    GPIO.setup(GPIO_ECHO, GPIO.IN)
-
-    GPIO.output(GPIO_TRIGGER,True)
+    GPIO.output(SONIC_TIME_TRIGGER,True)
 
     time.sleep(0.00001)
-    GPIO.output(GPIO_TRIGGER,False)
+    GPIO.output(SONIC_TIME_TRIGGER,False)
 
     starttime = time.time()
     stoptime = time.time()
 
-    while GPIO.input(GPIO_ECHO) == 0:
+    while GPIO.input(SONIC_TIME_ECHO) == 0:
         starttime = time.time()
 
-    while GPIO.input(GPIO_ECHO) == 1:
+    while GPIO.input(SONIC_TIME_ECHO) == 1:
         stoptime = time.time()
 
     return stoptime - starttime
@@ -42,13 +40,13 @@ def get_temperature():
 
     :return: tupel with humidity and temperature
     """
-
     sensor = Adafruit_DHT.DHT22
     gpio = 4
 
     humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
     returnlist = humidity,temperature
     return returnlist
+
 
 def get_air_pressure():
 
@@ -60,8 +58,11 @@ def get_gps_data():
 
 if __name__ == "__main__":
     while True:
-        get_sonic_time()
-        get_temperature()
-        get_air_pressure()
-        get_gps_data()
-        time.sleep(60)
+        sonictime = get_sonic_time()
+        print("Distance: ",(sonictime*34300)/2)
+        temperature = get_temperature()
+        airpressure = get_air_pressure()
+        gpsdata = get_gps_data()
+        measurementValues = json.dumps(
+            dict(sonic_time=sonictime, temperature=temperature, airpressure=airpressure, gpsdata=gpsdata))
+        time.sleep(1)
