@@ -11,6 +11,9 @@ import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
 
+#ID
+id = 4711
+
 # GPIO Ports on the PI
 SONIC_TIME_TRIGGER = 18
 SONIC_TIME_ECHO = 24
@@ -74,13 +77,7 @@ def get_temperature_humidity():
     :return: tupel with humidity and temperature
     """
 
-    humidity, temp = Adafruit_DHT.read_retry(humiditytempsensor, TEMPERATURE_SENSOR)
-    returnlist = humidity, temp
-    return returnlist
-
-
-def get_air_pressure():
-    return 0
+    return Adafruit_DHT.read_retry(humiditytempsensor, TEMPERATURE_SENSOR)
 
 
 def get_gps_data():
@@ -124,7 +121,7 @@ def send_sensor_data(sensordata):
     :param sensordata: json structure which contains all the sensordata
     :return: send data if no data is send return -1
     """
-    string = """PUT /sensor/data HTTP/1.1\n\r
+    string = """POST /data/id HTTP/1.1\n\r
                 Content-Type: application/json\n\r
                 Accept: application/json\n\r
                 Content-Length:{datasize}\n\r
@@ -134,6 +131,7 @@ def send_sensor_data(sensordata):
     if senddata <= 0:
         return -1
     return sensordata
+
 
 def signal_handler():
     """Closes the ports and the socketconnection after pushing ctrl-c
@@ -145,24 +143,15 @@ def signal_handler():
     GPIO.cleanup()
     sys.exit(0)
 
+
 if __name__ == "__main__":
     connectret = connect_with_rest_interface()
     if connectret != -1:
         while True:
             signal.signal(signal.SIGINT, signal_handler)
             sonictime = get_sonic_time()
-            if sonictime != -1:
-                print("Distance: {distance} cm\r\n".format(distance=(sonictime * 34300) / 2))
-            temperature = get_temperature_humidity()
-            print("Temprature {temp} degree\r\n".format(temp=temperature[1]))
-            print ("Humidity {humidity} %\r\n".format(humidity=temperature[0]))
-            airpressure = get_air_pressure()
-            gpsdata = get_gps_data()
-            print(
-            "GPSData: latitude: {latitude}, longitude: {longitude}".format(latitude=gpsdata[0], longitude=gpsdata[1]))
+            humidity, temp = get_temperature_humidity()
+            latitude, longitude = get_gps_data()
             measurementValues = json.dumps(
-                dict(sonic_time=sonictime, temperature=temperature, airpressure=airpressure, gpsdata=gpsdata))
-            send_sensor_data(measurementValues)
+                {'id': id, 'dist': sonictime,'temp': temp,'humid': humidity,'long':longitude, 'lat': latitude})
             time.sleep(2)
-
-
