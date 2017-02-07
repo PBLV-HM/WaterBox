@@ -127,9 +127,9 @@ if __name__ == "__main__":
         distance = get_distance()
         print("Distance {dist}\n\r".format(dist=distance))
         humidity, temperature = get_temperature_humidity()
-        print("humidity: {humid}, temp: {temp}\n\r".format(humid=humidity, temp=temperature))
+        print("Humidity: {humid}, Temperature: {temp}\n\r".format(humid=humidity, temp=temperature))
         latitude, longitude = get_gps_data()
-        print("latitude: {lat}, longitude: {long}\n\r".format(lat=latitude, long=longitude))
+        print("Latitude: {lat}, Longitude: {long}\n\r".format(lat=latitude, long=longitude))
         measurementValues = {'lat': latitude, 'lon': longitude, 'degree': temperature,
                              'distance': distance, 'airpressure': 0, 'wet': humidity}
         print("Send data to server")
