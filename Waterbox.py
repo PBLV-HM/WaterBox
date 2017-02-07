@@ -110,7 +110,8 @@ def disconnect_with_rest_interface():
 
     :return: statuscode if no error occures return 0
     """
-    return restsocket.close()
+    restsocket.close()
+    return 0
 
 
 def send_sensor_data(sensordata):
