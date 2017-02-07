@@ -1,16 +1,36 @@
 #!/usr/bin/env python2.7
+"""This module reads the data of all sensors in an interval of 30 seconds and sends it with a post request
+to the MOPEl server.
+This script boots automatically after booting the MOPEL Box.
+
+    Interpreter Version:
+        **Python2.7**
+
+    Examples:
+        $python2.7 Waterbox.py
+
+
+        *****Starting WaterBox*****\n
+        Distance: 46 cm\n
+        Humidity: 45% Temperature: 23 degree\n
+        Latitude: 45322 Longitude: 56444\n
+        Response from Server <201>\n
+        CTRL-C pressed\n
+        server stopped\n
+"""
 
 import json
 import signal
 import sys
 import time
 
-import Adafruit_DHT
-import RPi.GPIO as GPIO
+#import Adafruit_DHT
+#import RPi.GPIO as GPIO
 import requests
-from gps import *
+#from gps import *
 
-GPIO.setmode(GPIO.BCM)
+#GPIO.setmode(GPIO.BCM)
+
 
 # deviceID
 devID = 4711
@@ -21,18 +41,18 @@ SONIC_TIME_ECHO = 24
 TEMPERATURE_SENSOR = 23
 
 # Setup sonic sensor
-GPIO.setup(SONIC_TIME_TRIGGER, GPIO.OUT)
-GPIO.setup(SONIC_TIME_ECHO, GPIO.IN)
+#GPIO.setup(SONIC_TIME_TRIGGER, GPIO.OUT)
+#GPIO.setup(SONIC_TIME_ECHO, GPIO.IN)
 
 # Setup humidity-, temperature-sensor
-humiditytempsensor = Adafruit_DHT.DHT22
+#humiditytempsensor = Adafruit_DHT.DHT22
 
 # Setup GPS Sensor
-gpsSession = gps("localhost", "2947")
-gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
+#gpsSession = gps("localhost", "2947")
+#gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
 
 # Setup REST-Data
-ipaddress = "http://hmpblv.markab.uberspace.de:63837/data/{devid}".format(devid= devID)
+ipaddress = "http://hmpblv.markab.uberspace.de:63837/data/{devid}".format(devid=devID)
 
 
 def get_distance():
@@ -42,29 +62,29 @@ def get_distance():
     :return: time between sending and receiving the sonic signal
     """
 
-    GPIO.output(SONIC_TIME_TRIGGER, True)
+   # GPIO.output(SONIC_TIME_TRIGGER, True)
 
     time.sleep(0.00001)
-    GPIO.output(SONIC_TIME_TRIGGER, False)
+    #GPIO.output(SONIC_TIME_TRIGGER, False)
 
     starttime = time.time()
     stoptime = time.time()
 
     counter = 0
 
-    while GPIO.input(SONIC_TIME_ECHO) == 0:
-        starttime = time.time()
-        counter += 1
-        if counter > 100000:
-            return -1
+  #  while GPIO.input(SONIC_TIME_ECHO) == 0:
+   #     starttime = time.time()
+    #    counter += 1
+     #   if counter > 100000:
+      #      return -1
 
     counter = 0
 
-    while GPIO.input(SONIC_TIME_ECHO) == 1:
-        stoptime = time.time()
-        counter += 1
-        if counter > 100000:
-            return -1
+    #while GPIO.input(SONIC_TIME_ECHO) == 1:
+     #   stoptime = time.time()
+      #  counter += 1
+       # if counter > 100000:
+        #    return -1
 
     sonictime = stoptime - starttime
     return (sonictime * 34300)/2
@@ -77,7 +97,7 @@ def get_temperature_humidity():
     :return: tupel with humidity and temperature
     """
 
-    return Adafruit_DHT.read_retry(humiditytempsensor, TEMPERATURE_SENSOR)
+    return 0#Adafruit_DHT.read_retry(humiditytempsensor, TEMPERATURE_SENSOR)
 
 
 def get_gps_data():
@@ -85,7 +105,7 @@ def get_gps_data():
 
     :return: list with latitude and longitude
     """
-    gpsc = GpsController()
+    gpsc = 0#GpsController()
 
     gpsc.start()
 
@@ -109,27 +129,29 @@ def send_sensor_data(sensordata):
     return requests.post(ipaddress, data=data_json, headers=headers)
 
 
-def signal_handler(argc, argv):
+def signal_handler(arg1, argv):
     """Closes the ports and the socketconnection after pushing ctrl-c
 
+    :param arg1: not used
+    :param arg2: not used
     :return: none
     """
     print("""CTRL-C pressed
         \n\r program stoped""")
-    GPIO.cleanup()
+    #GPIO.cleanup()
     sys.exit(0)
 
 
 if __name__ == "__main__":
-    print("Starting Waterbox")
+    print("*****Starting Waterbox*****")
     while True:
         signal.signal(signal.SIGINT, signal_handler)
         distance = get_distance()
-        print("Distance {dist}\n\r".format(dist=distance))
+        print("Distance {dist} cm\n\r".format(dist=distance))
         humidity, temperature = get_temperature_humidity()
-        print("Humidity: {humid}, Temperature: {temp}\n\r".format(humid=humidity, temp=temperature))
+        print("Humidity: {humid} % Temperature: {temp} degree\n\r".format(humid=humidity, temp=temperature))
         latitude, longitude = get_gps_data()
-        print("Latitude: {lat}, Longitude: {long}\n\r".format(lat=latitude, long=longitude))
+        print("Latitude: {lat} Longitude: {long}\n\r".format(lat=latitude, long=longitude))
         measurementValues = {'lat': latitude, 'lon': longitude, 'degree': temperature,
                              'distance': distance, 'airpressure': 0, 'wet': humidity}
         print("Send data to server")
