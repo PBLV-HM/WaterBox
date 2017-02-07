@@ -31,7 +31,7 @@ gpsSession.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
 
 # Setup REST-Data
 ipaddress = "hmpblv.markab.uberspace.de"
-port = "80"
+port = 80
 restsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
@@ -110,8 +110,7 @@ def disconnect_with_rest_interface():
 
     :return: statuscode if no error occures return 0
     """
-    restsocket.close()
-    return 0
+    return restsocket.close()
 
 
 def send_sensor_data(sensordata):
