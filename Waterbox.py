@@ -4,11 +4,9 @@ import socket
 import sys
 import time
 
-import
 import Adafruit_DHT
 import RPi.GPIO as GPIO
-import gps
-*
+from gps import *
 
 GPIO.setmode(GPIO.BCM)
 
