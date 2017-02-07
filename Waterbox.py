@@ -7,7 +7,8 @@ import time
 import
 import Adafruit_DHT
 import RPi.GPIO as GPIO
-from gps import *
+import gps
+*
 
 GPIO.setmode(GPIO.BCM)
 
