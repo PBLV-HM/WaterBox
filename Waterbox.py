@@ -30,7 +30,7 @@ gpsSession = gps("localhost", "2947")
 gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
 
 # Setup REST-Data
-ipaddress = "hmpblv.markab.uberspace.de"
+ipaddress = "hmpblv.markab.uberspace.de/data/id"
 port = 80
 restsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -103,8 +103,9 @@ def send_sensor_data(sensordata):
     :param sensordata: json structure which contains all the sensordata
     :return: send data if no data is send return -1
     """
+    data_json = json.dumps(sensordata)
     headers = {'Content-type','application/json'}
-    return requests.post(ipaddress,data=sensordata,headers = headers)
+    return requests.post(ipaddress,data=data_json,headers = headers)
 
 
 def signal_handler(argc,argv):
@@ -128,8 +129,7 @@ if __name__ == "__main__":
         print("humidity: {humid}, temp: {temp}\n\r".format(humid = humidity, temp = temperature))
         latitude, longitude = get_gps_data()
         print("latitude: {lat}, longitude: {long}\n\r".format(lat = latitude, long = longitude))
-        measurementValues = json.dumps(
-            {'id': id, 'dist': sonictime,'temp': temperature,'humid': humidity,'long':longitude, 'lat': latitude})
+        measurementValues =  {'id': id, 'dist': sonictime,'temp': temperature,'humid': humidity,'long':longitude, 'lat': latitude}
         print("Send data to server")
         response = send_sensor_data(measurementValues)
         print("Response from Server {resp}".format(resp=response))
