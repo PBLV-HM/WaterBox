@@ -11,7 +11,7 @@ from gps import *
 GPIO.setmode(GPIO.BCM)
 
 #ID
-id = 4711
+devID = 4711
 
 # GPIO Ports on the PI
 SONIC_TIME_TRIGGER = 18
@@ -30,7 +30,7 @@ gpsSession = gps("localhost", "2947")
 gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
 
 # Setup REST-Data
-ipaddress = "http://hmpblv.markab.uberspace.de/data/id"
+ipaddress = "http://hmpblv.markab.uberspace.de/data/{devid}".format(devID)
 port = 80
 restsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         print("humidity: {humid}, temp: {temp}\n\r".format(humid = humidity, temp = temperature))
         latitude, longitude = get_gps_data()
         print("latitude: {lat}, longitude: {long}\n\r".format(lat = latitude, long = longitude))
-        measurementValues =  {'id': id, 'dist': sonictime,'temp': temperature,'humid': humidity,'long':longitude, 'lat': latitude}
+        measurementValues =  {'lat': latitude, 'long': longitude,'degree': temperature,'distance': sonictime,'airpressure':0, 'wet': humidity}
         print("Send data to server")
         response = send_sensor_data(measurementValues)
         print("Response from Server {resp}".format(resp=response))
