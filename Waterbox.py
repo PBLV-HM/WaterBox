@@ -31,7 +31,6 @@ gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
 
 # Setup REST-Data
 ipaddress = "http://hmpblv.markab.uberspace.de/data/{devid}".format(devid = devID)
-port = 80
 restsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
@@ -129,8 +128,8 @@ if __name__ == "__main__":
         print("humidity: {humid}, temp: {temp}\n\r".format(humid = humidity, temp = temperature))
         latitude, longitude = get_gps_data()
         print("latitude: {lat}, longitude: {long}\n\r".format(lat = latitude, long = longitude))
-        measurementValues =  {'lat': latitude, 'long': longitude,'degree': temperature,'distance': sonictime,'airpressure':0, 'wet': humidity}
+        measurementValues =  {'lat': latitude, 'lon': longitude,'degree': temperature,'distance': sonictime,'airpressure':0, 'wet': humidity}
         print("Send data to server")
         response = send_sensor_data(measurementValues)
         print("Response from Server {resp}".format(resp=response))
-        time.sleep(2)
+        time.sleep(30)
