@@ -136,14 +136,17 @@ def signal_handler():
 
     :return: none
     """
-    print("CTRL-C pressed")
+    print("""CTRL-C pressed
+        \n\r program stops""")
     disconnect_with_rest_interface()
     GPIO.cleanup()
     sys.exit(0)
 
 
 if __name__ == "__main__":
+    print("Starting Waterbox")
     connectret = connect_with_rest_interface()
+    print("Connection with {url} established".format(url=ipaddress))
     if connectret != -1:
         while True:
             signal.signal(signal.SIGINT, signal_handler)
