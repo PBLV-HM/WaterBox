@@ -137,7 +137,7 @@ def signal_handler(argc,argv):
     :return: none
     """
     print("""CTRL-C pressed
-        \n\r program stops""")
+        \n\r program stoped""")
     disconnect_with_rest_interface()
     GPIO.cleanup()
     sys.exit(0)
@@ -151,9 +151,13 @@ if __name__ == "__main__":
         while True:
             signal.signal(signal.SIGINT, signal_handler)
             sonictime = get_sonic_time()
-            humidity, temp = get_temperature_humidity()
+            print("Sonictime {sonic}\n\r".format(sonic = sonictime))
+            humidity, temperature = get_temperature_humidity()
+            print("humidity: {humid}, temp: {temp}\n\r".format(humid = humidity, temp = temperature))
             latitude, longitude = get_gps_data()
+            print("latitude: {lat}, longitude: {long}\n\r".format(lat = latitude, long = longitude))
             measurementValues = json.dumps(
-                {'id': id, 'dist': sonictime,'temp': temp,'humid': humidity,'long':longitude, 'lat': latitude})
+                {'id': id, 'dist': sonictime,'temp': temperature,'humid': humidity,'long':longitude, 'lat': latitude})
+            print("Send data to server")
             send_sensor_data(measurementValues)
             time.sleep(2)
