@@ -1,11 +1,11 @@
 import json
 import signal
-import socket
 import sys
 import time
 
 import Adafruit_DHT
 import RPi.GPIO as GPIO
+import requests
 from gps import *
 
 GPIO.setmode(GPIO.BCM)
@@ -97,38 +97,14 @@ def get_gps_data():
     return gpsdata
 
 
-def connect_with_rest_interface():
-    """Establish the connection with the REST server
-
-    :return: statuscode if no error occures return 0
-    """
-    return restsocket.connect((ipaddress, port))
-
-
-def disconnect_with_rest_interface():
-    """Closes the connection with the REST server
-
-    :return: statuscode if no error occures return 0
-    """
-    return restsocket.close()
-
-
 def send_sensor_data(sensordata):
     """Generates an rest header and sends the data to the server
 
     :param sensordata: json structure which contains all the sensordata
     :return: send data if no data is send return -1
     """
-    string = """POST /data/id HTTP/1.1\n\r
-                Content-Type: application/json\n\r
-                Accept: application/json\n\r
-                Content-Length:{datasize}\n\r
-                {data}\n\r
-    """.format(datasize=len(sensordata), data=sensordata)
-    senddata = restsocket.send(string)
-    if senddata <= 0:
-        return -1
-    return sensordata
+    headers = {'Content-type','application/json'}
+    return requests.post(ipaddress,data=sensordata,headers = headers)
 
 
 def signal_handler(argc,argv):
@@ -138,26 +114,23 @@ def signal_handler(argc,argv):
     """
     print("""CTRL-C pressed
         \n\r program stoped""")
-    disconnect_with_rest_interface()
     GPIO.cleanup()
     sys.exit(0)
 
 
 if __name__ == "__main__":
     print("Starting Waterbox")
-    connectret = connect_with_rest_interface()
-    print("Connection with {url} established".format(url=ipaddress))
-    if connectret != -1:
-        while True:
-            signal.signal(signal.SIGINT, signal_handler)
-            sonictime = get_sonic_time()
-            print("Sonictime {sonic}\n\r".format(sonic = sonictime))
-            humidity, temperature = get_temperature_humidity()
-            print("humidity: {humid}, temp: {temp}\n\r".format(humid = humidity, temp = temperature))
-            latitude, longitude = get_gps_data()
-            print("latitude: {lat}, longitude: {long}\n\r".format(lat = latitude, long = longitude))
-            measurementValues = json.dumps(
-                {'id': id, 'dist': sonictime,'temp': temperature,'humid': humidity,'long':longitude, 'lat': latitude})
-            print("Send data to server")
-            send_sensor_data(measurementValues)
-            time.sleep(2)
+    while True:
+        signal.signal(signal.SIGINT, signal_handler)
+        sonictime = get_sonic_time()
+        print("Sonictime {sonic}\n\r".format(sonic = sonictime))
+        humidity, temperature = get_temperature_humidity()
+        print("humidity: {humid}, temp: {temp}\n\r".format(humid = humidity, temp = temperature))
+        latitude, longitude = get_gps_data()
+        print("latitude: {lat}, longitude: {long}\n\r".format(lat = latitude, long = longitude))
+        measurementValues = json.dumps(
+            {'id': id, 'dist': sonictime,'temp': temperature,'humid': humidity,'long':longitude, 'lat': latitude})
+        print("Send data to server")
+        response = send_sensor_data(measurementValues)
+        print("Response from Server {resp}".format(resp=response))
+        time.sleep(2)
