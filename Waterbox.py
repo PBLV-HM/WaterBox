@@ -123,12 +123,13 @@ if __name__ == "__main__":
     while True:
         signal.signal(signal.SIGINT, signal_handler)
         sonictime = get_sonic_time()
+        distance = (sonictime * 34300)/2
         print("Sonictime {sonic}\n\r".format(sonic = sonictime))
         humidity, temperature = get_temperature_humidity()
         print("humidity: {humid}, temp: {temp}\n\r".format(humid = humidity, temp = temperature))
         latitude, longitude = get_gps_data()
         print("latitude: {lat}, longitude: {long}\n\r".format(lat = latitude, long = longitude))
-        measurementValues =  {'lat': latitude, 'lon': longitude,'degree': temperature,'distance': sonictime,'airpressure':0, 'wet': humidity}
+        measurementValues =  {'lat': latitude, 'lon': longitude,'degree': temperature,'distance': distance,'airpressure':0, 'wet': humidity}
         print("Send data to server")
         response = send_sensor_data(measurementValues)
         print("Response from Server {resp}".format(resp=response))
