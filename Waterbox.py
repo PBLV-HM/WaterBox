@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.1
+
 import json
 import signal
 import sys
@@ -10,7 +12,7 @@ from gps import *
 
 GPIO.setmode(GPIO.BCM)
 
-#ID
+# deviceID
 devID = 4711
 
 # GPIO Ports on the PI
@@ -30,11 +32,10 @@ gpsSession = gps("localhost", "2947")
 gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
 
 # Setup REST-Data
-ipaddress = "http://hmpblv.markab.uberspace.de:63837/data/{devid}".format(devid = devID)
-restsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ipaddress = "http://hmpblv.markab.uberspace.de:63837/data/{devid}".format(devid= devID)
 
 
-def get_sonic_time():
+def get_distance():
     """HCSR04 sends a sonic signal and is notified when the signal returns
         this function returns the time that elapsed between the sensors
 
@@ -65,7 +66,8 @@ def get_sonic_time():
         if counter > 100000:
             return -1
 
-    return stoptime - starttime
+    sonictime = stoptime - starttime
+    return (sonictime * 34300)/2
 
 
 def get_temperature_humidity():
@@ -103,11 +105,11 @@ def send_sensor_data(sensordata):
     :return: send data if no data is send return -1
     """
     data_json = json.dumps(sensordata)
-    headers = {'Content-type' : 'application/json'}
-    return requests.post(ipaddress,data=data_json,headers = headers)
+    headers = {'Content-type': 'application/json'}
+    return requests.post(ipaddress, data=data_json, headers=headers)
 
 
-def signal_handler(argc,argv):
+def signal_handler(argc, argv):
     """Closes the ports and the socketconnection after pushing ctrl-c
 
     :return: none
@@ -122,14 +124,14 @@ if __name__ == "__main__":
     print("Starting Waterbox")
     while True:
         signal.signal(signal.SIGINT, signal_handler)
-        sonictime = get_sonic_time()
-        distance = (sonictime * 34300)/2
-        print("Distance {dist}\n\r".format(dist = distance))
+        distance = get_distance()
+        print("Distance {dist}\n\r".format(dist=distance))
         humidity, temperature = get_temperature_humidity()
-        print("humidity: {humid}, temp: {temp}\n\r".format(humid = humidity, temp = temperature))
+        print("humidity: {humid}, temp: {temp}\n\r".format(humid=humidity, temp=temperature))
         latitude, longitude = get_gps_data()
-        print("latitude: {lat}, longitude: {long}\n\r".format(lat = latitude, long = longitude))
-        measurementValues =  {'lat': latitude, 'lon': longitude,'degree': temperature,'distance': distance,'airpressure':0, 'wet': humidity}
+        print("latitude: {lat}, longitude: {long}\n\r".format(lat=latitude, long=longitude))
+        measurementValues = {'lat': latitude, 'lon': longitude, 'degree': temperature,
+                             'distance': distance, 'airpressure': 0, 'wet': humidity}
         print("Send data to server")
         response = send_sensor_data(measurementValues)
         print("Response from Server {resp}".format(resp=response))
