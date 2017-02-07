@@ -104,7 +104,7 @@ def send_sensor_data(sensordata):
     :return: send data if no data is send return -1
     """
     data_json = json.dumps(sensordata)
-    headers = {'Content-type','application/json'}
+    headers = {'Content-type' : 'application/json'}
     return requests.post(ipaddress,data=data_json,headers = headers)
 
 
