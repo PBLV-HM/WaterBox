@@ -124,7 +124,7 @@ if __name__ == "__main__":
         signal.signal(signal.SIGINT, signal_handler)
         sonictime = get_sonic_time()
         distance = (sonictime * 34300)/2
-        print("Sonictime {sonic}\n\r".format(sonic = sonictime))
+        print("Distance {dist}\n\r".format(dist = distance))
         humidity, temperature = get_temperature_humidity()
         print("humidity: {humid}, temp: {temp}\n\r".format(humid = humidity, temp = temperature))
         latitude, longitude = get_gps_data()
