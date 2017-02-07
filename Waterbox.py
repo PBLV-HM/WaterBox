@@ -24,12 +24,12 @@ import signal
 import sys
 import time
 
-#import Adafruit_DHT
-#import RPi.GPIO as GPIO
+import Adafruit_DHT
+import RPi.GPIO as GPIO
 import requests
-#from gps import *
+from gps import *
 
-#GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BCM)
 
 
 # deviceID
@@ -41,15 +41,15 @@ SONIC_TIME_ECHO = 24
 TEMPERATURE_SENSOR = 23
 
 # Setup sonic sensor
-#GPIO.setup(SONIC_TIME_TRIGGER, GPIO.OUT)
-#GPIO.setup(SONIC_TIME_ECHO, GPIO.IN)
+GPIO.setup(SONIC_TIME_TRIGGER, GPIO.OUT)
+GPIO.setup(SONIC_TIME_ECHO, GPIO.IN)
 
 # Setup humidity-, temperature-sensor
-#humiditytempsensor = Adafruit_DHT.DHT22
+humiditytempsensor = Adafruit_DHT.DHT22
 
 # Setup GPS Sensor
-#gpsSession = gps("localhost", "2947")
-#gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
+gpsSession = gps("localhost", "2947")
+gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
 
 # Setup REST-Data
 ipaddress = "http://hmpblv.markab.uberspace.de:63837/data/{devid}".format(devid=devID)
@@ -61,29 +61,29 @@ def get_distance():
     :return: time between sending and receiving the sonic signal
     """
 
-   # GPIO.output(SONIC_TIME_TRIGGER, True)
+    GPIO.output(SONIC_TIME_TRIGGER, True)
 
     time.sleep(0.00001)
-    #GPIO.output(SONIC_TIME_TRIGGER, False)
+    GPIO.output(SONIC_TIME_TRIGGER, False)
 
     starttime = time.time()
     stoptime = time.time()
 
     counter = 0
 
-  #  while GPIO.input(SONIC_TIME_ECHO) == 0:
-   #     starttime = time.time()
-    #    counter += 1
-     #   if counter > 100000:
-      #      return -1
+    while GPIO.input(SONIC_TIME_ECHO) == 0:
+        starttime = time.time()
+        counter += 1
+        if counter > 100000:
+            return -1
 
     counter = 0
 
-    #while GPIO.input(SONIC_TIME_ECHO) == 1:
-     #   stoptime = time.time()
-      #  counter += 1
-       # if counter > 100000:
-        #    return -1
+    while GPIO.input(SONIC_TIME_ECHO) == 1:
+        stoptime = time.time()
+        counter += 1
+        if counter > 100000:
+            return -1
 
     sonictime = stoptime - starttime
     return (sonictime * 34300)/2
@@ -95,7 +95,7 @@ def get_temperature_humidity():
     :return: tupel with humidity and temperature
     """
 
-    return 0#Adafruit_DHT.read_retry(humiditytempsensor, TEMPERATURE_SENSOR)
+    return Adafruit_DHT.read_retry(humiditytempsensor, TEMPERATURE_SENSOR)
 
 
 def get_gps_data():
@@ -103,7 +103,7 @@ def get_gps_data():
 
     :return: list with latitude and longitude
     """
-    gpsc = 0#GpsController()
+    gpsc = GpsController()
 
     gpsc.start()
 
@@ -136,7 +136,7 @@ def signal_handler(arg1, argv):
     """
     print("""CTRL-C pressed\n\r
         ***Waterbox stoped***""")
-    #GPIO.cleanup()
+    GPIO.cleanup()
     sys.exit(0)
 
 
