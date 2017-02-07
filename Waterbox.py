@@ -16,7 +16,7 @@ This script boots automatically after booting the MOPEL Box.
         Latitude: 45322 Longitude: 56444\n
         Response from Server <201>\n
         CTRL-C pressed\n
-        server stopped\n
+        *****Waterbox stopped*****\n
 """
 
 import json
@@ -56,8 +56,7 @@ ipaddress = "http://hmpblv.markab.uberspace.de:63837/data/{devid}".format(devid=
 
 
 def get_distance():
-    """HCSR04 sends a sonic signal and is notified when the signal returns
-        this function returns the time that elapsed between the sensors
+    """Reads data from the HCSR04-Sonicsensor and returnes the distance
 
     :return: time between sending and receiving the sonic signal
     """
@@ -91,8 +90,7 @@ def get_distance():
 
 
 def get_temperature_humidity():
-    """Gets data from the AM2302 humidity and temperature sensor
-       and returns the data in a tupel which contains humidity and temperature
+    """Gets data from the AM2302-Sensor and returns humidity and temperature
 
     :return: tupel with humidity and temperature
     """
@@ -136,8 +134,8 @@ def signal_handler(arg1, argv):
     :param arg2: not used
     :return: none
     """
-    print("""CTRL-C pressed
-        \n\r program stoped""")
+    print("""CTRL-C pressed\n\r
+        ***Waterbox stoped***""")
     #GPIO.cleanup()
     sys.exit(0)
 
