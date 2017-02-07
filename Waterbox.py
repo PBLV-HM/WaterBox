@@ -30,7 +30,7 @@ gpsSession = gps("localhost", "2947")
 gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
 
 # Setup REST-Data
-ipaddress = "http://hmpblv.markab.uberspace.de/data/{devid}".format(devID)
+ipaddress = "http://hmpblv.markab.uberspace.de/data/{devid}".format(devid = devID)
 port = 80
 restsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
