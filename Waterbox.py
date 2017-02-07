@@ -5,9 +5,8 @@ import sys
 import time
 
 import Adafruit_DHT
-import gps
-
 import RPi.GPIO as GPIO
+import gps
 
 GPIO.setmode(GPIO.BCM)
 
@@ -117,7 +116,6 @@ def disconnect_with_rest_interface():
 def send_sensor_data(sensordata):
     """Generates an rest header and sends the data to the server
 
-
     :param sensordata: json structure which contains all the sensordata
     :return: send data if no data is send return -1
     """
@@ -136,7 +134,7 @@ def send_sensor_data(sensordata):
 def signal_handler():
     """Closes the ports and the socketconnection after pushing ctrl-c
 
-    :return:
+    :return: none
     """
     print("CTRL-C pressed")
     disconnect_with_rest_interface()
@@ -154,4 +152,5 @@ if __name__ == "__main__":
             latitude, longitude = get_gps_data()
             measurementValues = json.dumps(
                 {'id': id, 'dist': sonictime,'temp': temp,'humid': humidity,'long':longitude, 'lat': latitude})
+            send_sensor_data(measurementValues)
             time.sleep(2)
