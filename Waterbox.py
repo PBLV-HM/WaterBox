@@ -26,8 +26,8 @@ GPIO.setup(SONIC_TIME_ECHO, GPIO.IN)
 humiditytempsensor = Adafruit_DHT.DHT22
 
 # Setup GPS Sensor
-gpsSession = gps.gps("localhost", "2947")
-gpsSession.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
+gpsSession = gps("localhost", "2947")
+gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
 
 # Setup REST-Data
 ipaddress = "hmpblv.markab.uberspace.de"
@@ -84,7 +84,7 @@ def get_gps_data():
 
     :return: list with latitude and longitude
     """
-    gpsc = gps.GpsController()
+    gpsc = GpsController()
 
     gpsc.start()
 
