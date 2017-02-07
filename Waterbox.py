@@ -131,7 +131,7 @@ def send_sensor_data(sensordata):
     return sensordata
 
 
-def signal_handler():
+def signal_handler(argc,argv):
     """Closes the ports and the socketconnection after pushing ctrl-c
 
     :return: none
