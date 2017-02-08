@@ -73,11 +73,6 @@ if __name__ == '__main__':
         "Unexpected error:", sys.exc_info()[0]
         raise
 
-    # Ctrl C
-    except KeyboardInterrupt:
-        print
-        "User cancelled"
-
     finally:
         print
         "Stopping gps controller"
