@@ -27,7 +27,7 @@ import time
 import Adafruit_DHT
 import RPi.GPIO as GPIO
 import requests
-from gps import *
+import GpsController
 
 GPIO.setmode(GPIO.BCM)
 
@@ -50,6 +50,7 @@ humiditytempsensor = Adafruit_DHT.DHT22
 # Setup GPS Sensor
 gpsSession = gps("localhost", "2947")
 gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
+gpsc = GpsController()
 
 # Setup REST-Data
 ipaddress = "http://hmpblv.markab.uberspace.de:63837/data/{devid}".format(devid=devID)
@@ -103,15 +104,13 @@ def get_gps_data():
 
     :return: list with latitude and longitude
     """
-    gpsc = GpsController()
+
 
     gpsc.start()
 
     gpsdata = [0, 0]
     gpsdata[0] = gpsc.fix.latitude
     gpsdata[1] = gpsc.fix.longitude
-
-    gpsc.stopController()
 
     return gpsdata
 
@@ -136,6 +135,7 @@ def signal_handler(arg1, argv):
     """
     print("""CTRL-C pressed\n\r
         ***Waterbox stoped***""")
+    gpsc.stopController()
     GPIO.cleanup()
     sys.exit(0)
 
