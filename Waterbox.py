@@ -27,7 +27,7 @@ import time
 import Adafruit_DHT
 import RPi.GPIO as GPIO
 import requests
-import GpsController
+from GpsController import GpsController
 
 GPIO.setmode(GPIO.BCM)
 
