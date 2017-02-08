@@ -23,6 +23,7 @@ import json
 import signal
 import sys
 import time
+import math
 
 import Adafruit_DHT
 import RPi.GPIO as GPIO
@@ -105,8 +106,9 @@ def get_gps_data():
     gpsdata = [0, 0]
     gpsdata[0] = gpsc.fix.latitude
     gpsdata[1] = gpsc.fix.longitude
-    if gpsdata[0] == "nan" or gpsdata[1] == "nan":
-        return [0,0]
+
+    if math.isnan(gpsdata[0]) or math.isnan(gpsdata[1]):
+        return [-1,-1]
     return gpsdata
 
 
