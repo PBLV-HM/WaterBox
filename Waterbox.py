@@ -105,7 +105,8 @@ def get_gps_data():
     gpsdata = [0, 0]
     gpsdata[0] = gpsc.fix.latitude
     gpsdata[1] = gpsc.fix.longitude
-
+    if gpsdata[0] == "nan" or gpsdata[1] == "nan":
+        return [0,0]
     return gpsdata
 
 
