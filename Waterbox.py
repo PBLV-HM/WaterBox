@@ -137,8 +137,8 @@ def signal_handler(arg1, argv):
 
 if __name__ == "__main__":
     print("*****Starting Waterbox*****")
+    gpsc.start()
     while True:
-        gpsc.start()
         signal.signal(signal.SIGINT, signal_handler)
         distance = get_distance()
         print("Distance {dist} cm\n\r".format(dist=distance))
