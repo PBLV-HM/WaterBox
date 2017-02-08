@@ -48,8 +48,6 @@ GPIO.setup(SONIC_TIME_ECHO, GPIO.IN)
 humiditytempsensor = Adafruit_DHT.DHT22
 
 # Setup GPS Sensor
-gpsSession = gps("localhost", "2947")
-gpsSession.stream(WATCH_ENABLE | WATCH_NEWSTYLE)
 gpsc = GpsController()
 
 # Setup REST-Data
@@ -104,10 +102,6 @@ def get_gps_data():
 
     :return: list with latitude and longitude
     """
-
-
-    gpsc.start()
-
     gpsdata = [0, 0]
     gpsdata[0] = gpsc.fix.latitude
     gpsdata[1] = gpsc.fix.longitude
@@ -143,6 +137,7 @@ def signal_handler(arg1, argv):
 if __name__ == "__main__":
     print("*****Starting Waterbox*****")
     while True:
+        gpsc.start()
         signal.signal(signal.SIGINT, signal_handler)
         distance = get_distance()
         print("Distance {dist} cm\n\r".format(dist=distance))
