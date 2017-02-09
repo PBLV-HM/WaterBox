@@ -108,7 +108,7 @@ def get_gps_data():
     gpsdata[1] = gpsc.fix.longitude
 
     if math.isnan(gpsdata[0]) or math.isnan(gpsdata[1]):
-        return [-1,-1]
+        return [0,0]
     return gpsdata
 
 
